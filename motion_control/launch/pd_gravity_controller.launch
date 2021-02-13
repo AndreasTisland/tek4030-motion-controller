@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<launch>
+    <!-- Control paramters, P and D term -->
+	<param name="kp" type="double" value="20.0" />
+	<param name="kd" type="double" value="10.0" />
+    
+    <!-- Arguments for the CrustCrawler simulation -->
+    <arg name="gripper_enabled" default="false" />
+    <arg name="control" default="effort" />
+    
+    <!-- Run the CrustCrawler Gazebo simulation -->
+    <include file="$(find crustcrawler_gazebo)/launch/controller.launch">
+		<arg name="gripper_enabled" value="$(arg gripper_enabled)" />
+        <arg name="control" value="$(arg control)" />
+	</include>
+    
+    <!-- Control and setpoint nodes -->
+	<node name="pd_gravity_controller" pkg="motion_control" type="pd_gravity_controller" output="screen"/>
+    <node name="setpoint_node" pkg="motion_control" type="setpoint_node" output="screen"/>
+    <!-- Open rqt_reconfigure for reconfiguration of kp and kd-->
+    <node name="my_rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" args="pd_gravity_controller setpoint_node"/>
+    <!--<node pkg='rqt_plot' name='rqt_plot' type='rqt_plot' args='/crustcrawler/joint_states/position[1]' /> -->
+</launch>
